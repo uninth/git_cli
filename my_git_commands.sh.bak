@@ -2,14 +2,6 @@
 #
 # $Header$
 #
-#--------------------------------------------------------------------------------------#
-# TODO
-#
-#--------------------------------------------------------------------------------------#
-
-# Create a token with expire date on gitlab.ssi.i2.dk -- write it here
-
-token=xxxxxxxxxxxxxxxxxxxx		# should be replaced with e.g a file and `cat ~/.token`
 
 ################################################################################
 # Main
@@ -24,19 +16,54 @@ case ${N}$C in
 	fi ;;
 esac
 
+token="unknown"
+
+if [ -f  ~/.token ]; then
+	token=`cat ~/.token`
+fi
+
+if [ -n "${TOKEN}" ]; then
+	token="${TOKEN}"
+fi
+
+if [ $token = "unknown" ]; then
+
+	cat <<-EOF
+
+	Sorry, but a git token (gitlab specific?) is required.
+	First, create a token on
+	http://gitlab.ssi.i2.dk -> profile settings -> access tokens
+	and save it, either to ~/.token or the ENV \${TOKEN}
+
+	This is *not secure* but convenient and required.
+
+	So, either do
+
+		export TOKEN="your token"
+ 	or
+		echo "your token" > ~/.token
+
+EOF
+	exit 0
+
+fi
+
 #
 # Process arguments
 #
 DO=INIT
 
-while getopts ui opt
+while getopts hiu opt
 do
 case $opt in
 	i)	DO=INIT
 	;;
 	u)	DO=UPDATE
 	;;
-	*)	echo "usage: $0 [-u] dir"; exit
+	*)	echo
+		echo "usage: $0 [-u] dir";
+		echo
+		exit
 	;;
 esac
 done
@@ -52,10 +79,18 @@ if [ "$DO" = "INIT" ]; then
 fi
 
 case `git --version | awk '{ print $3}'` in
-	1.9.*)
+	1.9.*)	
+		ADD='git add -A . *'
+		PUSH='git push -u origin master'
+	;;
+	1.5.2*)
+		ADD='git add . *'
+		PUSH='git push origin master'
 
 	;;
-
+	*)	echo "unknown git version: `git --version`"; exit
+	;;
+esac
 
 if [ -d $1 ]; then
 	PROJECT=`basename $1`
@@ -64,15 +99,15 @@ if [ -d $1 ]; then
 			cd $PROJECT
 			git init
 			git remote add origin git@gitlab:uninth/${PROJECT}.git
-			git add -A .
+			${ADD}
 			git commit -m 'initial commit'
-			git push -u origin master
+			${PUSH}
 		;;
 		"UPDATE")
 			cd $PROJECT
-			git add -A . *
+			${ADD}
 			git commit -m 'added/moved some files'
-			git push -u origin master
+			${PUSH}
 		;;
 	esac
 else

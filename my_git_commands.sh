@@ -2,14 +2,6 @@
 #
 # $Header$
 #
-#--------------------------------------------------------------------------------------#
-# TODO
-#
-#--------------------------------------------------------------------------------------#
-
-# Create a token with expire date on gitlab.ssi.i2.dk -- write it here
-
-token=xxxxxxxxxxxxxxxxxxxx		# should be replaced with e.g a file and `cat ~/.token`
 
 ################################################################################
 # Main
@@ -24,19 +16,54 @@ case ${N}$C in
 	fi ;;
 esac
 
+token="unknown"
+
+if [ -f  ~/.token ]; then
+	token=`cat ~/.token`
+fi
+
+if [ -n "${TOKEN}" ]; then
+	token="${TOKEN}"
+fi
+
+if [ $token = "unknown" ]; then
+
+	cat <<-EOF
+
+	Sorry, but a git token (gitlab specific?) is required.
+	First, create a token on
+	http://gitlab.ssi.i2.dk -> profile settings -> access tokens
+	and save it, either to ~/.token or the ENV \${TOKEN}
+
+	This is *not secure* but convenient and required.
+
+	So, either do
+
+		export TOKEN="your token"
+ 	or
+		echo "your token" > ~/.token
+
+EOF
+	exit 0
+
+fi
+
 #
 # Process arguments
 #
 DO=INIT
 
-while getopts ui opt
+while getopts hiu opt
 do
 case $opt in
 	i)	DO=INIT
 	;;
 	u)	DO=UPDATE
 	;;
-	*)	echo "usage: $0 [-u] dir"; exit
+	*)	echo
+		echo "	usage: $0 [-u] dir";
+		echo
+		exit
 	;;
 esac
 done
