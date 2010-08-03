@@ -52,18 +52,10 @@ if [ "$DO" = "INIT" ]; then
 fi
 
 case `git --version | awk '{ print $3}'` in
-	1.9.*)	
-		ADD='git add -A . *'
-		PUSH='git push -u origin master'
-	;;
-	1.5.2*)
-		ADD='git add . *'
-		PUSH='git push origin master'
+	1.9.*)
 
 	;;
-	*)	echo "unknown git version: `git --version`"; exit
-	;;
-esac
+
 
 if [ -d $1 ]; then
 	PROJECT=`basename $1`
@@ -72,15 +64,15 @@ if [ -d $1 ]; then
 			cd $PROJECT
 			git init
 			git remote add origin git@gitlab:uninth/${PROJECT}.git
-			${ADD}
+			git add -A .
 			git commit -m 'initial commit'
-			${PUSH}
+			git push -u origin master
 		;;
 		"UPDATE")
 			cd $PROJECT
-			${ADD}
+			git add -A . *
 			git commit -m 'added/moved some files'
-			${PUSH}
+			git push -u origin master
 		;;
 	esac
 else
