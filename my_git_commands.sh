@@ -69,22 +69,15 @@ esac
 done
 shift `expr $OPTIND - 1`
 
-if [ "$DO" = "INIT" ]; then
-	repo=$1
-
-	test -z $repo && echo "Repo name required." 1>&2 && exit 1
-
-	curl -H "Content-Type:application/json" http://gitlab.ssi.i2.dk/api/v3/projects?private_token=$token -d "{ \"name\": \"$repo\" }"
-
-fi
-
 case `git --version | awk '{ print $3}'` in
 	1.9.*)	
-		ADD='git add -A . *'
+		#ADD='git add -A . *'
+		ADD='git add . '
 		PUSH='git push -u origin master'
 	;;
 	1.5.2*)
-		ADD='git add . *'
+		#ADD='git add . *'
+		ADD='git add . '
 		PUSH='git push origin master'
 
 	;;
@@ -96,6 +89,12 @@ if [ -d $1 ]; then
 	PROJECT=`basename $1`
 	case $DO in
 		"INIT")
+			repo=$1
+
+			test -z $repo && echo "Repo name required." 1>&2 && exit 1
+
+			curl -H "Content-Type:application/json" http://gitlab.ssi.i2.dk/api/v3/projects?private_token=$token -d "{ \"name\": \"$repo\" }"
+
 			cd $PROJECT
 			git init
 			git remote add origin git@gitlab:uninth/${PROJECT}.git
