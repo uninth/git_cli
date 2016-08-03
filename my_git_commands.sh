@@ -71,17 +71,20 @@ shift `expr $OPTIND - 1`
 
 case `git --version | awk '{ print $3}'` in
 	1.9.*)	
-		#ADD='git add -A . *'
 		ADD='git add . '
 		PUSH='git push -u origin master'
+		echo "git version `git --version` ok"
 	;;
 	1.5.2*)
 		#ADD='git add . *'
 		ADD='git add . '
 		PUSH='git push origin master'
+		echo "git version `git --version` ok"
 
 	;;
-	*)	echo "unknown git version: `git --version`"; exit
+	*)	ADD='git add . '
+		PUSH='git push -u origin master'
+		echo "unknown git version: `git --version`, trying anyway"
 	;;
 esac
 
