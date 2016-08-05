@@ -61,7 +61,7 @@ case $opt in
 	u)	DO=UPDATE
 	;;
 	*)	echo
-		echo "	usage: $0 [-u] dir";
+		echo "	usage: $0 [-u] dir comment";
 		echo
 		exit
 	;;
@@ -70,13 +70,12 @@ done
 shift `expr $OPTIND - 1`
 
 case `git --version | awk '{ print $3}'` in
-	1.9.*)	
+	1.9.*|2.7.*)	
 		ADD='git add . '
 		PUSH='git push -u origin master'
 		echo "git version `git --version` ok"
 	;;
 	1.5.2*)
-		#ADD='git add . *'
 		ADD='git add . '
 		PUSH='git push origin master'
 		echo "git version `git --version` ok"
@@ -90,6 +89,13 @@ esac
 
 if [ -d $1 ]; then
 	PROJECT=`basename $1`
+	shift
+	case $* in
+		"")	COMMENT="added/moved some files"
+		;;
+		*)	COMMENT="$*"
+		;;
+	esac
 	case $DO in
 		"INIT")
 			repo=$1
@@ -108,7 +114,7 @@ if [ -d $1 ]; then
 		"UPDATE")
 			cd $PROJECT
 			${ADD}
-			git commit -m 'added/moved some files'
+			git commit -m "${COMMENT}"
 			${PUSH}
 		;;
 	esac
