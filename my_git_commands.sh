@@ -98,7 +98,7 @@ if [ -d $1 ]; then
 	esac
 	case $DO in
 		"INIT")
-			repo=$1
+			repo=$PROJECT
 
 			test -z $repo && echo "Repo name required." 1>&2 && exit 1
 
