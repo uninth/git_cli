@@ -5,6 +5,8 @@ A simple gitlab cli to
   - create a new project
   - update an existing project
 
+See source for more info (this is a _works for me_ project).
+
 ## Notes:
 
 This doesn't work with ``git version 1.5.2.2`` currently installed on

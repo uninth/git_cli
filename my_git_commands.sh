@@ -62,7 +62,7 @@ case $opt in
 	;;
 	*)	echo
 		echo "	usage: $0 [-u] dir comment";
-		echo
+		echo "  will try and add 1 to any git tag or set git tag to 1.0-1 first time"
 		exit
 	;;
 esac
@@ -105,14 +105,40 @@ if [ -d $1 ]; then
 			curl -H "Content-Type:application/json" http://gitlab.ssi.i2.dk/api/v3/projects?private_token=$token -d "{ \"name\": \"$repo\" }"
 
 			cd $PROJECT
+			set -x
 			git init
 			git remote add origin git@gitlab:uninth/${PROJECT}.git
 			${ADD}
 			git commit -m 'initial commit'
 			${PUSH}
+			git push origin 1.0-1
 		;;
 		"UPDATE")
 			cd $PROJECT
+			VERSION=`git tag 2>/dev/null | tail -1`
+			MAJOR="1"
+			MINOR="0"
+			PATCH="1"
+
+			case $VERSION in
+				"")	echo "No version found"
+					VERSION="${MAJOR}.${MINOR}-${PATCH}"
+				;;
+
+				*)	echo "Found version: VERSION = ${VERSION}"
+					MAJOR=`echo ${VERSION} | awk -F'.' '$1 ~ /^[0-9]+$/ { print $1 }'`
+					MINOR=`echo ${VERSION} | sed 's/^.*\.//; s/-.*//' | awk '$1 ~ /^[0-9]+$/ { print $1 }'`
+					PATCH=`echo ${VERSION} | awk -F'-' '$NF ~ /^[0-9]+$/ { print $NF }'`
+					NEXTP=`echo ${PATCH:=0} +1 | bc`
+					echo "current version: ${VERSION}: MAJOR=${MAJOR:="1"} MINOR=${MINOR:="0"} PATCH=${PATCH:="1"}"
+					echo "assuming patch update from ${PATCH} to ${NEXTP}"
+					VERSION="${MAJOR}.${MINOR}-${NEXTP}"
+				;;
+			esac
+
+			echo new version: $VERSION
+			git tag ${VERSION}
+			git push origin ${VERSION}
 			${ADD}
 			git commit -m "${COMMENT}"
 			${PUSH}
