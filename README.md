@@ -1,27 +1,15 @@
 
 # gitlab cli
 
-A simple gitlab cli to 
-  - create a new project
-  - update an existing project
+This is a _works for me_ project while testing git / gitlab. I'd like to create 
+a new project from the command line, update existing project - also from the
+command line - on different versions of git and operating systems. I started
+out in shell (an error) but it works ok, except that the creation requires token
+on gitlab which is a security issue. Testing with github has not been done yet.
+
+While this is public available it is not ment for production nor publication; use
+if you like but don't blame me for anything.
 
 See source for more info (this is a _works for me_ project).
 
-## Notes:
-
-This doesn't work with ``git version 1.5.2.2`` currently installed on
-``fedora6.ssi.i2.dk``, it does how ever work with ``git version 1.9.1``
-installed on ``buh.ssi.i2.dk``.
-
-The error is in the command syntax for ``git add``
-
-  - ``git version 1.9.1``: ``git add -A . *``
-  - ``git version 1.5.2.2``: ``git add . *``
-
-And
-
-  - ``git version 1.9.1``: ``git push -u origin master``
-  - ``git version 1.5.2.2``: ``git push origin master``
-
-So that has been fixed.
 
