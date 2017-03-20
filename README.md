@@ -10,6 +10,6 @@ on gitlab which is a security issue. Testing with github has not been done yet.
 While this is public available it is not ment for production nor publication; use
 if you like but don't blame me for anything.
 
-See source for more info (this is a _works for me_ project).
+See source for more info.
 
 
