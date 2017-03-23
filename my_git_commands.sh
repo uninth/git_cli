@@ -115,7 +115,7 @@ if [ -d $1 ]; then
 		;;
 		"UPDATE")
 			cd $PROJECT
-			VERSION=`git tag 2>/dev/null | tail -1`
+			VERSION=`git tag 2>/dev/null | sort -n -t'-' -k2,2 | tail -1`
 			MAJOR="1"
 			MINOR="0"
 			PATCH="1"
@@ -123,6 +123,7 @@ if [ -d $1 ]; then
 			case $VERSION in
 				"")	echo "No version found"
 					VERSION="${MAJOR}.${MINOR}-${PATCH}"
+					git tag ${VERSION}
 				;;
 
 				*)	echo "Found version: VERSION = ${VERSION}"
