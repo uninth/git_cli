@@ -91,7 +91,15 @@ if [ -d $1 ]; then
 	PROJECT=`basename $1`
 	shift
 	case $* in
-		"")	COMMENT="added/moved some files"
+		"") FILES=`gfind . -type f -not -path '*/\.*' -printf "%T@ %p\n"|
+				sed '/version.*/d; /.git/d; ;/bak/d; /.log/d' |
+				sort -n | cut -d' ' -f 2- | tail -n 3  `
+			FILES=`echo $FILES | while read f
+			do
+				basename $f
+			done`
+			FILES=`echo $FILES | sed 's/ /, /g; s/\(.*\), /\1 and /;' `
+			COMMENT="Updated/changed $FILES"
 		;;
 		*)	COMMENT="$*"
 		;;
@@ -120,8 +128,8 @@ if [ -d $1 ]; then
 			MINOR="0"
 			PATCH="1"
 
-			case $VERSION in
-				"")	echo "No version found"
+			case "${VERSION}" in
+				"")	echo "VERSION='${VERSION}' No version found"
 					VERSION="${MAJOR}.${MINOR}-${PATCH}"
 					git tag ${VERSION}
 				;;
